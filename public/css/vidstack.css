@@ -1,0 +1,273 @@
+/* Default Vidstack Player Styles */
+:root {
+  --media-primary-color: #e50914;
+  --media-secondary-color: #ffffff;
+  --media-bg-color: #141414;
+  --media-control-bg: rgba(0, 0, 0, 0.7);
+  --media-control-hover-bg: rgba(0, 0, 0, 0.8);
+  --media-focus-ring-color: #e50914;
+}
+
+/* Media Player Container */
+.media-player {
+  --media-brand: var(--media-primary-color);
+  --media-focus-ring-color: var(--media-primary-color);
+  width: 100%;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  color: var(--media-secondary-color);
+  background-color: var(--media-bg-color);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* Media Controls */
+.media-controls {
+  --media-control-padding: 12px;
+  opacity: 0;
+  transition: opacity 0.2s ease-in-out;
+}
+
+.media-player:hover .media-controls,
+.media-player:focus-within .media-controls,
+.media-player[data-preview] .media-controls,
+.media-player[data-started] .media-controls {
+  opacity: 1;
+}
+
+/* Control Buttons */
+.media-control-button {
+  color: var(--media-secondary-color);
+  border-radius: 4px;
+  transition: background-color 0.2s ease, color 0.2s ease, transform 0.1s ease;
+}
+
+.media-control-button:hover {
+  color: var(--media-primary-color);
+  transform: scale(1.1);
+}
+
+.media-control-button:active {
+  transform: scale(0.95);
+}
+
+/* Time Slider */
+.media-time-slider {
+  --media-slider-height: 5px;
+  --media-slider-hover-height: 7px;
+  --media-slider-thumb-size: 14px;
+  --media-slider-track-color: rgba(255, 255, 255, 0.3);
+  --media-slider-track-fill-color: var(--media-primary-color);
+  margin: 0 8px;
+}
+
+.media-time-slider:hover {
+  --media-slider-height: 7px;
+}
+
+.media-slider-thumb {
+  background-color: var(--media-primary-color);
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.media-time-slider:hover .media-slider-thumb,
+.media-time-slider:focus-within .media-slider-thumb {
+  opacity: 1;
+}
+
+/* Volume Slider */
+.media-volume-slider {
+  --media-slider-height: 4px;
+  --media-slider-track-color: rgba(255, 255, 255, 0.3);
+  --media-slider-track-fill-color: var(--media-secondary-color);
+  --media-slider-thumb-size: 12px;
+  width: 80px;
+}
+
+.media-volume-slider:hover .media-slider-thumb,
+.media-volume-slider:focus-within .media-slider-thumb {
+  opacity: 1;
+}
+
+/* Time Display */
+.media-time {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* Buffering Indicator */
+.media-buffering-indicator {
+  --media-buffering-size: 64px;
+  --media-buffering-track-size: 5px;
+  --media-buffering-track-color: rgba(255, 255, 255, 0.25);
+  --media-buffering-animation-duration: 1.5s;
+  color: var(--media-primary-color);
+}
+
+/* Captions */
+.media-captions {
+  --media-captions-font-size: 20px;
+  --media-captions-font-weight: 500;
+  --media-captions-text-shadow: 0px 0px 6px rgba(0, 0, 0, 0.75);
+  --media-captions-bg-color: rgba(0, 0, 0, 0.7);
+  --media-captions-border-radius: 4px;
+  --media-captions-padding: 4px 8px;
+}
+
+/* Settings Menu */
+.media-menu {
+  --media-menu-bg: var(--media-control-bg);
+  --media-menu-color: var(--media-secondary-color);
+  --media-menu-font-size: 14px;
+  --media-menu-border-radius: 4px;
+  --media-menu-padding: 8px;
+  --media-menu-item-padding: 8px 12px;
+  --media-menu-item-hover-bg: rgba(255, 255, 255, 0.1);
+  --media-menu-item-focus-bg: rgba(255, 255, 255, 0.15);
+  --media-menu-item-selected-bg: var(--media-primary-color);
+  --media-menu-item-selected-color: white;
+  --media-menu-item-border-radius: 4px;
+  --media-menu-animation-duration: 0.2s;
+  --media-menu-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+/* Gradients for controls */
+.top-control-bar {
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0) 100%);
+  padding: 16px 16px 40px 16px;
+}
+
+.bottom-control-bar {
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0) 100%);
+  padding: 40px 16px 16px 16px;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.media-player[data-started] .media-controls {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  .media-time-slider {
+    --media-slider-height: 4px;
+    --media-slider-thumb-size: 12px;
+  }
+  
+  .media-volume-slider {
+    width: 60px;
+  }
+  
+  .media-time {
+    font-size: 12px;
+  }
+  
+  .media-captions {
+    --media-captions-font-size: 16px;
+  }
+}
+
+/* Fullscreen mode */
+.media-player[data-fullscreen] {
+  border-radius: 0;
+}
+
+/* Live indicator */
+.live-indicator {
+  display: inline-flex;
+  align-items: center;
+  background-color: var(--media-primary-color);
+  color: white;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 4px;
+  margin-left: 8px;
+}
+
+.live-indicator::before {
+  content: "";
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background-color: white;
+  border-radius: 50%;
+  margin-right: 6px;
+}
+
+/* Thumbnail preview */
+.thumbnail-preview {
+  border: 2px solid var(--media-primary-color);
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+/* Center play button */
+.center-play-button {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 80px;
+  height: 80px;
+  background-color: rgba(229, 9, 20, 0.7);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease, transform 0.2s ease;
+}
+
+.media-player:not([data-playing]) .center-play-button {
+  opacity: 1;
+}
+
+.center-play-button:hover {
+  transform: translate(-50%, -50%) scale(1.1);
+  background-color: rgba(229, 9, 20, 0.9);
+}
+
+/* Next episode button */
+.next-episode-button {
+  position: absolute;
+  bottom: 80px;
+  right: 20px;
+  background-color: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: background-color 0.2s ease;
+}
+
+.next-episode-button:hover {
+  background-color: var(--media-primary-color);
+}
+
+/* Skip intro button */
+.skip-intro-button {
+  position: absolute;
+  bottom: 80px;
+  right: 20px;
+  background-color: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-size: 14px;
+  transition: background-color 0.2s ease;
+}
+
+.skip-intro-button:hover {
+  background-color: var(--media-primary-color);
+}

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+
 import { motion } from 'framer-motion';
 import { FaStar, FaPlay, FaHeart } from 'react-icons/fa';
 import { useContentStore, LiveStream, VodStream, Series } from '../../store/contentStore';
@@ -10,9 +10,10 @@ import { useAuthStore } from '../../store/authStore';
 interface ContentCardProps {
   item: LiveStream | VodStream | Series;
   type: 'live' | 'movie' | 'series';
+  onClick?: () => void;
 }
 
-const ContentCard = ({ item, type }: ContentCardProps) => {
+const ContentCard = ({ item, type, onClick }: ContentCardProps) => {
   const { serverUrl, user } = useAuthStore();
   const { tmdbDetails, fetchTmdbData } = useContentStore();
   const { isFavorite, addToFavorites, removeFromFavorites, watchHistory } = useSettingsStore();
@@ -147,11 +148,11 @@ const ContentCard = ({ item, type }: ContentCardProps) => {
   }, [type, contentId, item, tmdbData, fetchTmdbData]);
   
   return (
-    <Link
-      to={`/player/${type}/${contentId}`}
+    <div
       className="block"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
+      onClick={onClick || (() => window.location.href = `/player/${type}/${contentId}`)}
     >
       <motion.div
         whileHover={{ scale: 1.05 }}
@@ -263,7 +264,7 @@ const ContentCard = ({ item, type }: ContentCardProps) => {
           )}
         </div>
       </motion.div>
-    </Link>
+    </div>
   );
 };
 

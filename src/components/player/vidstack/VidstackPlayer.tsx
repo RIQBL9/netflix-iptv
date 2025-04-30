@@ -1,7 +1,18 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Hls from 'hls.js';
 import { motion } from 'framer-motion';
 import { useSettingsStore } from '../../../store/settingsStore';
+import { 
+  PlayIcon, 
+  PauseIcon, 
+  FullscreenIcon, 
+  FullscreenExitIcon, 
+  VolumeHighIcon, 
+  VolumeMuteIcon, 
+  ChevronLeftIcon, 
+  ReplayIcon, 
+  ForwardIcon 
+} from './icons';
 
 interface VidstackPlayerProps {
   src: string;
@@ -31,12 +42,15 @@ const VidstackPlayer: React.FC<VidstackPlayerProps> = ({
   const hlsRef = useRef<Hls | null>(null);
   const { videoQuality } = useSettingsStore();
   
-  const [isPlaying, setIsPlaying] = React.useState(true);
-  const [currentTime, setCurrentTime] = React.useState(0);
-  const [duration, setDuration] = React.useState(0);
-  const [isFullscreen, setIsFullscreen] = React.useState(false);
-  const [showControls, setShowControls] = React.useState(true);
-  const [isBuffering, setIsBuffering] = React.useState(false);
+  const [isPlaying, setIsPlaying] = useState(true);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [showControls, setShowControls] = useState(true);
+  const [isBuffering, setIsBuffering] = useState(false);
+  const [volume, setVolume] = useState(1);
+  const [isMuted, setIsMuted] = useState(false);
+  const [showNextEpisodePrompt, setShowNextEpisodePrompt] = useState(false);
   
   // Determine if the source is HLS
   const isHLS = src.includes('.m3u8');
@@ -161,8 +175,8 @@ const VidstackPlayer: React.FC<VidstackPlayerProps> = ({
         video.duration > 0 && 
         video.currentTime > video.duration - 20
       ) {
-        // Trigger next episode logic
-        nextEpisodeCallback();
+        // Show next episode prompt instead of immediately triggering
+        setShowNextEpisodePrompt(true);
       }
     };
 
