@@ -298,8 +298,8 @@ const PlayerPage = () => {
       transition={{ duration: 0.3 }}
     >
       <div className="w-full max-w-screen-xl">
-        {/* Use the React Player component instead of Vidstack due to compatibility issues */}
-        <ReactPlayerComponent
+        {/* Use the Vidstack Player component for better HLS support */}
+        <VidstackPlayer
           src={streamUrl}
           title={getEpisodeTitle()}
           type={type as 'live' | 'movie' | 'series'}
