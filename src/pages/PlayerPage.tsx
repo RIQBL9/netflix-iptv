@@ -5,6 +5,7 @@ import { useContentStore, SeriesInfo } from '../store/contentStore';
 import { useSettingsStore } from '../store/settingsStore';
 import VidstackPlayer from '../components/player/vidstack/VidstackPlayer';
 import EnhancedVidstackPlayer from '../components/player/vidstack/EnhancedVidstackPlayer';
+import ReactPlayerComponent from '../components/player/react-player/ReactPlayerComponent';
 import { getStreamUrl, getSeriesInfo } from '../api/xtreamApi';
 import { motion } from 'framer-motion';
 
@@ -297,8 +298,8 @@ const PlayerPage = () => {
       transition={{ duration: 0.3 }}
     >
       <div className="w-full max-w-screen-xl">
-        {/* Use the enhanced Vidstack player */}
-        <EnhancedVidstackPlayer
+        {/* Use the React Player component instead of Vidstack due to compatibility issues */}
+        <ReactPlayerComponent
           src={streamUrl}
           title={getEpisodeTitle()}
           type={type as 'live' | 'movie' | 'series'}
