@@ -23,7 +23,7 @@ import {
   CaptionButton,
   PIPButton,
 } from '@vidstack/react';
-import '@vidstack/react/player/styles/default.css';
+// CSS import removed - path not found in @vidstack/react package
 import { motion } from 'framer-motion';
 
 interface EnhancedVidstackPlayerProps {
