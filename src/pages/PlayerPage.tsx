@@ -3,8 +3,9 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
 import { useContentStore, SeriesInfo } from '../store/contentStore';
 import { useSettingsStore } from '../store/settingsStore';
-import VideoPlayer from '../components/player/VideoPlayer';
+import VidstackPlayer from '../components/player/vidstack/VidstackPlayer';
 import { getStreamUrl, getSeriesInfo } from '../api/xtreamApi';
+import { motion } from 'framer-motion';
 
 const PlayerPage = () => {
   const { type, id } = useParams<{ type: string; id: string }>();
@@ -221,22 +222,54 @@ const PlayerPage = () => {
   // Loading state
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-black">
-        <div className="spinner"></div>
-        <p className="mt-4 text-text-secondary">Loading content...</p>
-      </div>
+      <motion.div 
+        className="flex flex-col items-center justify-center min-h-screen bg-black"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.3 }}
+      >
+        <motion.div 
+          className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full"
+          animate={{ rotate: 360 }}
+          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+        />
+        <motion.p 
+          className="mt-4 text-text-secondary"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+        >
+          Loading content...
+        </motion.p>
+      </motion.div>
     );
   }
   
   // Error state
   if (error || !streamUrl) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-black">
-        <div className="text-red-500 text-xl mb-4">Error: {error || 'Failed to load stream'}</div>
-        <button onClick={handleBack} className="btn-primary">
+      <motion.div 
+        className="flex flex-col items-center justify-center min-h-screen bg-black"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.3 }}
+      >
+        <motion.div 
+          className="text-red-500 text-xl mb-4"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+        >
+          Error: {error || 'Failed to load stream'}
+        </motion.div>
+        <motion.button 
+          onClick={handleBack} 
+          className="px-6 py-2 bg-primary text-white rounded hover:bg-primary/80 transition-colors"
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+        >
           Go Back
-        </button>
-      </div>
+        </motion.button>
+      </motion.div>
     );
   }
   
@@ -255,9 +288,15 @@ const PlayerPage = () => {
   };
   
   return (
-    <div className="min-h-screen bg-black flex items-center justify-center">
+    <motion.div 
+      className="min-h-screen bg-black flex items-center justify-center"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.3 }}
+    >
       <div className="w-full max-w-screen-xl">
-        <VideoPlayer
+        <VidstackPlayer
           src={streamUrl}
           title={getEpisodeTitle()}
           type={type as 'live' | 'movie' | 'series'}
@@ -267,7 +306,7 @@ const PlayerPage = () => {
           nextEpisodeCallback={type === 'series' ? playNextEpisode : undefined}
         />
       </div>
-    </div>
+    </motion.div>
   );
 };
 
