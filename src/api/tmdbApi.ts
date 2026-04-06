@@ -50,7 +50,6 @@ const extractYear = (dateString?: string) => {
 const findBestMatch = (results: any[], title: string, year?: string) => {
   if (!results || results.length === 0) return null;
   
-  // If we have a year, try to find an exact match with title and year
   if (year) {
     const exactMatch = results.find((item) => {
       const itemYear = extractYear(item.release_date || item.first_air_date);
@@ -64,28 +63,24 @@ const findBestMatch = (results: any[], title: string, year?: string) => {
     if (exactMatch) return exactMatch;
   }
   
-  // Otherwise, return the first result (TMDB already sorts by relevance)
   return results[0];
 };
 
 // Main function to fetch TMDB details for a title
 export const fetchTmdbDetails = async (title: string, year?: string, type: 'movie' | 'tv' = 'movie') => {
   try {
-    // Step 1: Search for the title
     const searchResults = await searchTmdb(title, type, year);
     
     if (!searchResults || searchResults.length === 0) {
       return null;
     }
     
-    // Step 2: Find the best match
     const bestMatch = findBestMatch(searchResults, title, year);
     
     if (!bestMatch) {
       return null;
     }
     
-    // Step 3: Get detailed information
     const details = await getTmdbDetails(bestMatch.id, type);
     
     if (!details) {
@@ -97,8 +92,8 @@ export const fetchTmdbDetails = async (title: string, year?: string, type: 'movi
       id: details.id,
       title: details.title || details.name,
       overview: details.overview,
-      poster_path: details.poster_path ? `https://image.tmdb.org/t/p/w500${details.poster_path}` : null,
-      backdrop_path: details.backdrop_path ? `https://image.tmdb.org/t/p/original${details.backdrop_path}` : null,
+      poster_path: details.poster_path ? `https://image.tmdb.org/t/p/w500${details.poster_path}` : '',
+      backdrop_path: details.backdrop_path ? `https://image.tmdb.org/t/p/original${details.backdrop_path}` : '',
       vote_average: details.vote_average,
       release_date: details.release_date || details.first_air_date,
       genres: details.genres || [],
@@ -106,7 +101,7 @@ export const fetchTmdbDetails = async (title: string, year?: string, type: 'movi
         id: actor.id,
         name: actor.name,
         character: actor.character,
-        profile_path: actor.profile_path ? `https://image.tmdb.org/t/p/w185${actor.profile_path}` : null,
+        profile_path: actor.profile_path ? `https://image.tmdb.org/t/p/w185${actor.profile_path}` : '',
       })) || [],
     };
   } catch (error) {
