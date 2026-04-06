@@ -14,7 +14,7 @@ import {
   FaArrowLeft,
   FaClosedCaptioning
 } from 'react-icons/fa';
-import { useSettingsStore, VideoQuality } from '../../store/settingsStore';
+import { useSettingsStore } from '../../store/settingsStore';
 
 interface VideoPlayerProps {
   src: string;
@@ -38,7 +38,7 @@ const VideoPlayer = ({
   const videoRef = useRef<HTMLVideoElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const hlsRef = useRef<Hls | null>(null);
-  const controlsTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const controlsTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   
   const { videoQuality, autoPlayNext } = useSettingsStore();
   
@@ -55,7 +55,6 @@ const VideoPlayer = ({
   const [nextEpisodeCountdown, setNextEpisodeCountdown] = useState(10);
   const [isBuffering, setIsBuffering] = useState(false);
   
-  // Initialize HLS.js if the browser doesn't support HLS natively
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
@@ -64,7 +63,6 @@ const VideoPlayer = ({
     
     const initializePlayer = () => {
       if (src.endsWith('.m3u8')) {
-        // Check if HLS.js is supported
         if (Hls.isSupported()) {
           hls = new Hls({
             maxBufferLength: 30,
@@ -76,7 +74,7 @@ const VideoPlayer = ({
           hls.attachMedia(video);
           
           hls.on(Hls.Events.MANIFEST_PARSED, () => {
-            // Get available qualities
+            if (!hls) return;
             const levels = hls.levels.map(level => {
               const height = level.height;
               return height ? `${height}p` : 'Auto';
@@ -84,7 +82,6 @@ const VideoPlayer = ({
             
             setAvailableQualities(['Auto', ...levels]);
             
-            // Set initial quality based on user preference
             if (videoQuality !== 'auto' && hls.levels.length > 0) {
               const qualityLevel = hls.levels.findIndex(level => 
                 level.height === parseInt(videoQuality.replace('p', ''))
@@ -94,16 +91,16 @@ const VideoPlayer = ({
                 hls.currentLevel = qualityLevel;
               }
             } else {
-              hls.currentLevel = -1; // Auto
+              hls.currentLevel = -1;
             }
             
-            // Start playback
             video.play().catch(error => {
               console.error('Error attempting to play:', error);
             });
           });
           
-          hls.on(Hls.Events.ERROR, (event, data) => {
+          hls.on(Hls.Events.ERROR, (_event, data) => {
+            if (!hls) return;
             if (data.fatal) {
               switch (data.type) {
                 case Hls.ErrorTypes.NETWORK_ERROR:
@@ -122,7 +119,6 @@ const VideoPlayer = ({
             }
           });
         } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-          // Native HLS support (Safari)
           video.src = src;
           video.addEventListener('loadedmetadata', () => {
             video.play().catch(error => {
@@ -131,7 +127,6 @@ const VideoPlayer = ({
           });
         }
       } else {
-        // Regular video source
         video.src = src;
         video.addEventListener('loadedmetadata', () => {
           video.play().catch(error => {
@@ -143,12 +138,10 @@ const VideoPlayer = ({
     
     initializePlayer();
     
-    // Set initial position if provided
     if (startPosition > 0 && type !== 'live') {
       video.currentTime = startPosition;
     }
     
-    // Cleanup
     return () => {
       if (hlsRef.current) {
         hlsRef.current.destroy();
@@ -160,7 +153,6 @@ const VideoPlayer = ({
     };
   }, [src, videoQuality, startPosition, type]);
   
-  // Handle play/pause
   const togglePlay = () => {
     const video = videoRef.current;
     if (!video) return;
@@ -174,7 +166,6 @@ const VideoPlayer = ({
     }
   };
   
-  // Handle volume change
   const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = parseFloat(e.target.value);
     setVolume(value);
@@ -186,7 +177,6 @@ const VideoPlayer = ({
     }
   };
   
-  // Toggle mute
   const toggleMute = () => {
     const video = videoRef.current;
     if (!video) return;
@@ -200,7 +190,6 @@ const VideoPlayer = ({
     }
   };
   
-  // Handle seeking
   const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = parseFloat(e.target.value);
     setCurrentTime(value);
@@ -211,7 +200,6 @@ const VideoPlayer = ({
     }
   };
   
-  // Toggle fullscreen
   const toggleFullscreen = () => {
     const container = containerRef.current;
     if (!container) return;
@@ -231,7 +219,6 @@ const VideoPlayer = ({
     }
   };
   
-  // Format time (seconds to MM:SS or HH:MM:SS)
   const formatTime = (seconds: number) => {
     if (isNaN(seconds)) return '00:00';
     
@@ -246,7 +233,6 @@ const VideoPlayer = ({
     return `${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
   
-  // Handle time update
   const handleTimeUpdate = () => {
     const video = videoRef.current;
     if (!video) return;
@@ -257,7 +243,6 @@ const VideoPlayer = ({
       onTimeUpdate(video.currentTime, video.duration);
     }
     
-    // Show next episode prompt when near the end (for series)
     if (
       type === 'series' && 
       nextEpisodeCallback && 
@@ -270,7 +255,6 @@ const VideoPlayer = ({
     }
   };
   
-  // Handle video metadata loaded
   const handleLoadedMetadata = () => {
     const video = videoRef.current;
     if (!video) return;
@@ -278,7 +262,6 @@ const VideoPlayer = ({
     setDuration(video.duration);
   };
   
-  // Skip forward/backward
   const skipTime = (seconds: number) => {
     const video = videoRef.current;
     if (!video) return;
@@ -286,7 +269,6 @@ const VideoPlayer = ({
     video.currentTime += seconds;
   };
   
-  // Change video quality
   const changeQuality = (quality: string) => {
     if (!hlsRef.current) return;
     
@@ -304,15 +286,14 @@ const VideoPlayer = ({
     setShowQualityMenu(false);
   };
   
-  // Handle next episode countdown
   useEffect(() => {
-    let countdownInterval: NodeJS.Timeout | null = null;
+    let countdownInterval: ReturnType<typeof setInterval> | null = null;
     
     if (showNextEpisodePrompt && nextEpisodeCallback) {
       countdownInterval = setInterval(() => {
         setNextEpisodeCountdown(prev => {
           if (prev <= 1) {
-            clearInterval(countdownInterval!);
+            if (countdownInterval) clearInterval(countdownInterval);
             if (autoPlayNext) {
               nextEpisodeCallback();
             }
@@ -330,7 +311,6 @@ const VideoPlayer = ({
     };
   }, [showNextEpisodePrompt, nextEpisodeCallback, autoPlayNext]);
   
-  // Handle controls visibility
   useEffect(() => {
     const handleMouseMove = () => {
       setShowControls(true);
@@ -362,7 +342,6 @@ const VideoPlayer = ({
     };
   }, [isPlaying]);
   
-  // Handle keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       switch (e.key) {
@@ -391,7 +370,6 @@ const VideoPlayer = ({
     };
   }, []);
   
-  // Handle buffering state
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
@@ -430,14 +408,12 @@ const VideoPlayer = ({
         onPause={() => setIsPlaying(false)}
       />
       
-      {/* Buffering indicator */}
       {isBuffering && (
         <div className="absolute inset-0 flex items-center justify-center bg-black/30">
           <div className="spinner"></div>
         </div>
       )}
       
-      {/* Video controls */}
       <AnimatePresence>
         {showControls && (
           <motion.div
@@ -446,7 +422,6 @@ const VideoPlayer = ({
             exit={{ opacity: 0 }}
             className="absolute inset-0 flex flex-col justify-between bg-gradient-to-b from-black/70 via-transparent to-black/70 p-4"
           >
-            {/* Top bar */}
             <div className="flex items-center justify-between">
               <div className="flex items-center">
                 <button 
@@ -463,7 +438,6 @@ const VideoPlayer = ({
               </div>
             </div>
             
-            {/* Center play/pause button */}
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
               <button 
                 onClick={togglePlay}
@@ -473,9 +447,7 @@ const VideoPlayer = ({
               </button>
             </div>
             
-            {/* Bottom controls */}
             <div className="space-y-4">
-              {/* Progress bar (not for live TV) */}
               {type !== 'live' && (
                 <div className="w-full">
                   <input
@@ -492,7 +464,6 @@ const VideoPlayer = ({
                 </div>
               )}
               
-              {/* Control buttons */}
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-4">
                   <button 
@@ -544,12 +515,10 @@ const VideoPlayer = ({
                 </div>
                 
                 <div className="flex items-center space-x-4">
-                  {/* Subtitles button */}
                   <button className="text-white hover:text-primary transition-colors">
                     <FaClosedCaptioning size={20} />
                   </button>
                   
-                  {/* Quality selection */}
                   <div className="relative">
                     <button 
                       onClick={() => setShowQualityMenu(!showQualityMenu)}
@@ -574,7 +543,6 @@ const VideoPlayer = ({
                     )}
                   </div>
                   
-                  {/* Fullscreen button */}
                   <button 
                     onClick={toggleFullscreen}
                     className="text-white hover:text-primary transition-colors"
@@ -588,7 +556,6 @@ const VideoPlayer = ({
         )}
       </AnimatePresence>
       
-      {/* Next episode prompt */}
       <AnimatePresence>
         {showNextEpisodePrompt && (
           <motion.div
