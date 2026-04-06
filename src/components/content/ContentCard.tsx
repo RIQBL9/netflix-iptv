@@ -20,7 +20,6 @@ const ContentCard = ({ item, type }: ContentCardProps) => {
   const [currentProgram, setCurrentProgram] = useState<string | null>(null);
   const [isHovered, setIsHovered] = useState(false);
   
-  // Get the appropriate ID based on content type
   const getContentId = () => {
     if (type === 'live') {
       return (item as LiveStream).stream_id;
@@ -33,7 +32,6 @@ const ContentCard = ({ item, type }: ContentCardProps) => {
   
   const contentId = getContentId();
   
-  // Get TMDB details if available
   const getTmdbDetails = () => {
     if (type === 'movie') {
       return tmdbDetails.movie[contentId.toString()];
@@ -45,7 +43,6 @@ const ContentCard = ({ item, type }: ContentCardProps) => {
   
   const tmdbData = getTmdbDetails();
   
-  // Get image URL (from TMDB if available, otherwise from Xtream)
   const getImageUrl = () => {
     if (tmdbData && tmdbData.poster_path) {
       return tmdbData.poster_path;
@@ -60,13 +57,11 @@ const ContentCard = ({ item, type }: ContentCardProps) => {
     }
   };
   
-  // Check if this content is a favorite
   const favorite = isFavorite(
     type === 'live' ? 'live' : type === 'movie' ? 'vod' : 'series',
     contentId
   );
   
-  // Toggle favorite status
   const toggleFavorite = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -80,13 +75,10 @@ const ContentCard = ({ item, type }: ContentCardProps) => {
     }
   };
   
-  // Get watch progress for movies and series
   const getWatchProgress = () => {
     const historyKey = type === 'movie' 
       ? contentId.toString() 
-      : type === 'series' && 'seriesInfo' in item 
-        ? `${contentId}_${item.seriesInfo?.season}_${item.seriesInfo?.episode}` 
-        : null;
+      : null;
     
     if (!historyKey) return null;
     
@@ -102,7 +94,6 @@ const ContentCard = ({ item, type }: ContentCardProps) => {
   
   const watchProgress = getWatchProgress();
   
-  // Fetch EPG data for live TV
   useEffect(() => {
     if (type === 'live' && serverUrl && user) {
       const fetchEpg = async () => {
@@ -127,7 +118,6 @@ const ContentCard = ({ item, type }: ContentCardProps) => {
     }
   }, [type, contentId, serverUrl, user]);
   
-  // Fetch TMDB data if not already available
   useEffect(() => {
     if ((type === 'movie' || type === 'series') && !tmdbData) {
       const fetchData = async () => {
@@ -157,7 +147,6 @@ const ContentCard = ({ item, type }: ContentCardProps) => {
         whileHover={{ scale: 1.05 }}
         className="content-card bg-gray-800 rounded-md overflow-hidden shadow-lg"
       >
-        {/* Image */}
         <div className="relative aspect-[2/3]">
           <img
             src={getImageUrl()}
@@ -174,7 +163,6 @@ const ContentCard = ({ item, type }: ContentCardProps) => {
             }}
           />
           
-          {/* Overlay on hover */}
           {isHovered && (
             <div className="absolute inset-0 bg-black/70 flex flex-col justify-between p-3">
               <div className="flex justify-end">
@@ -216,7 +204,6 @@ const ContentCard = ({ item, type }: ContentCardProps) => {
             </div>
           )}
           
-          {/* Watch progress indicator */}
           {watchProgress && (
             <div className="absolute bottom-0 left-0 right-0 h-1 bg-gray-700">
               <div
@@ -226,7 +213,6 @@ const ContentCard = ({ item, type }: ContentCardProps) => {
             </div>
           )}
           
-          {/* Live indicator for TV channels */}
           {type === 'live' && (
             <div className="absolute top-2 left-2 bg-primary text-white text-xs px-2 py-1 rounded">
               LIVE
@@ -234,7 +220,6 @@ const ContentCard = ({ item, type }: ContentCardProps) => {
           )}
         </div>
         
-        {/* Content info */}
         <div className="p-2">
           <h3 className="text-white font-medium text-sm truncate">
             {type === 'live'
