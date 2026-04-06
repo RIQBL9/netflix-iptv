@@ -1,8 +1,8 @@
 import axios from 'axios';
 
 // TMDB API configuration
-const TMDB_API_KEY = 'YOUR_TMDB_API_KEY'; // Replace with your actual API key
-const TMDB_READ_ACCESS_TOKEN = 'YOUR_TMDB_READ_ACCESS_TOKEN'; // Replace with your actual token
+const TMDB_API_KEY = '56ededaa5fe0fa70e72b4b889dfe78ff'; // Replace with your actual API key
+const TMDB_READ_ACCESS_TOKEN = 'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI1NmVkZWRhYTVmZTBmYTcwZTcyYjRiODg5ZGZlNzhmZiIsIm5iZiI6MTc3NTQ2ODU2MC41Nywic3ViIjoiNjlkMzgwMTA5NGVhN2U0ZTI4NWM2ODMyIiwic2NvcGVzIjpbImFwaV9yZWFkIl0sInZlcnNpb24iOjF9.E3ZVy5jj_aOqtdKSC7xh4VXYE7KcO_om_UbzL1Qwe5g'; // Replace with your actual token
 
 const tmdbClient = axios.create({
   baseURL: 'https://api.themoviedb.org/3',
