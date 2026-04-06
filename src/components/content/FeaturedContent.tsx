@@ -20,24 +20,21 @@ const FeaturedContent = ({ content, type }: FeaturedContentProps) => {
     ? tmdbDetails.movie[contentId.toString()] 
     : tmdbDetails.tv[contentId.toString()];
   
-  // Fetch TMDB data if not already available
   useEffect(() => {
     if (!tmdbData) {
       fetchTmdbData(
-        type,
+        type === 'movie' ? 'movie' : 'tv',
         contentId.toString(),
         content.name
       );
     }
   }, [type, contentId, content.name, tmdbData, fetchTmdbData]);
   
-  // Get backdrop image
   const getBackdropUrl = () => {
     if (tmdbData && tmdbData.backdrop_path) {
       return tmdbData.backdrop_path;
     }
     
-    // Fallback to content image
     if (type === 'movie') {
       return (content as VodStream).stream_icon;
     } else {
@@ -45,7 +42,6 @@ const FeaturedContent = ({ content, type }: FeaturedContentProps) => {
     }
   };
   
-  // Get genres as string
   const getGenres = () => {
     if (tmdbData && tmdbData.genres) {
       return tmdbData.genres.slice(0, 3).map(g => g.name).join(' • ');
@@ -58,7 +54,6 @@ const FeaturedContent = ({ content, type }: FeaturedContentProps) => {
     return '';
   };
   
-  // Get release year
   const getReleaseYear = () => {
     if (tmdbData) {
       const date = tmdbData.release_date || tmdbData.first_air_date;
@@ -80,7 +75,6 @@ const FeaturedContent = ({ content, type }: FeaturedContentProps) => {
       className="relative rounded-xl overflow-hidden mb-8"
       style={{ height: '500px' }}
     >
-      {/* Background image */}
       <div className="absolute inset-0">
         <img
           src={getBackdropUrl()}
@@ -93,7 +87,6 @@ const FeaturedContent = ({ content, type }: FeaturedContentProps) => {
         <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/60 to-transparent"></div>
       </div>
       
-      {/* Content */}
       <div className="relative z-10 h-full flex flex-col justify-end p-8">
         <motion.div
           initial={{ y: 20, opacity: 0 }}
